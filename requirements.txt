@@ -3,15 +3,11 @@ uvicorn[standard]
 supabase
 redis
 python-jose[cryptography]
-passlib[bcrypt]
 authlib
 httpx
 pydantic
 pydantic-settings
 qrcode[pil]
-celery
-python-multipart
 email-validator
 python-dotenv
-slowapi
 validators
