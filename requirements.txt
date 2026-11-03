@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 supabase
 redis
+upstash-redis
 python-jose[cryptography]
 authlib
 httpx

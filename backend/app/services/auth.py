@@ -19,7 +19,7 @@ def login_with_password(email,password):
     except Exception as e:
         raise HTTPException(status_code=400,detail=str(e))
     
-def login_with_google(email):
+def login_with_google(email=None):
     try:
         response=supabase.auth.sign_in_with_oauth({'provider':'google'})
         return response.url
