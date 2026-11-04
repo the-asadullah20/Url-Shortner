@@ -8,27 +8,28 @@ import os
 
 router=APIRouter(tags=["URLs"])
 
+
+def public_base_url() -> str:
+    return (os.getenv("BASE_URL") or "http://localhost:8000").rstrip("/")
+
+
 @router.post("/shorten")
 def shorten_url(data:URLCreate):
     response=create_short_url(str(data.original_url))
-
-    short_url=f"{os.getenv('BASE_URL')}/{response['short_code']}"
+    short_code=response["short_code"]
+    short_url=f"{public_base_url()}/{short_code}"
 
     return {
         "short_url":short_url,
+        "short_code":short_code,
         "original_url":str(data.original_url)
     }
 
 @router.get("/qr/{short_code}")
 def get_qr_code(short_code:str):
-    short_url=f"{os.getenv('BASE_URL')}/{short_code}"
+    short_url=f"{public_base_url()}/{short_code}"
     return StreamingResponse(generate_qr_code(short_url),media_type="image/png")
 
 @router.get("/{short_code}")
 def redirect(short_code:str):
     return redirect_url(short_code)
-
-    return StreamingResponse(
-        generate_qr_code(short_url),
-        media_type="image/png"
-    )

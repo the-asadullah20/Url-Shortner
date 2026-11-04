@@ -3,21 +3,42 @@
  * Connects to existing FastAPI backend endpoints with strict contract fidelity.
  */
 
-export const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-).replace(/\/+$/, '');
+const configuredBase = (import.meta.env.VITE_API_BASE_URL || '').trim();
+
+// Local dev uses the Vite proxy (`/api` -> FastAPI on port 8000) so the browser stays same-origin.
+export const API_BASE_URL = configuredBase
+  ? configuredBase.replace(/\/+$/, '')
+  : import.meta.env.DEV
+    ? '/api'
+    : 'http://localhost:8000';
+
+function messageFromErrorBody(errorData, fallback) {
+  const detail = errorData?.detail ?? errorData?.details ?? errorData?.message;
+  if (Array.isArray(detail)) {
+    const parts = detail
+      .map((item) => (typeof item === 'string' ? item : item?.msg))
+      .filter(Boolean);
+    if (parts.length) return parts.join(' ');
+  }
+  if (detail && typeof detail === 'object') {
+    return detail.msg || fallback;
+  }
+  if (typeof detail === 'string' && detail.trim()) return detail;
+  return fallback;
+}
 
 /**
  * Standard fetch wrapper with normalized error handling
  */
 async function request(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
+  const { headers, ...rest } = options;
   const config = {
+    ...rest,
     headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
+      ...(rest.body ? { 'Content-Type': 'application/json' } : {}),
+      ...headers,
     },
-    ...options,
   };
 
   try {
@@ -26,12 +47,13 @@ async function request(endpoint, options = {}) {
     // If response is not ok, parse error details
     if (!response.ok) {
       let errorMessage = `Request failed with status ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.detail || errorData.details || errorData.message || errorMessage;
-      } catch {
-        const text = await response.text();
-        if (text) errorMessage = text;
+      const text = await response.text();
+      if (text) {
+        try {
+          errorMessage = messageFromErrorBody(JSON.parse(text), text);
+        } catch {
+          errorMessage = text;
+        }
       }
       throw new Error(errorMessage);
     }

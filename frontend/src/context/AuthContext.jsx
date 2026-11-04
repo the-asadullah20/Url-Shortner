@@ -81,8 +81,11 @@ export function AuthProvider({ children }) {
     setAuthError(null);
     try {
       const data = await loginUser(email, password);
-      const currentUser = data.user || data.data?.user || { email };
-      setUser(currentUser);
+      setUser({
+        id: data.user?.id,
+        email: data.user?.email || email,
+        token: data.access_token || null,
+      });
       closeAuthModal();
       return { success: true, data };
     } catch (err) {
@@ -98,8 +101,11 @@ export function AuthProvider({ children }) {
     setAuthError(null);
     try {
       const data = await registerUser(email, password);
-      const currentUser = data.user || data.data?.user || { email };
-      setUser(currentUser);
+      setUser({
+        id: data.user?.id,
+        email: data.user?.email || email,
+        token: data.access_token || null,
+      });
       closeAuthModal();
       return { success: true, data };
     } catch (err) {
