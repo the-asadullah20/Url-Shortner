@@ -1,0 +1,85 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+/* Enable class-based dark mode toggle for Tailwind CSS v4 */
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --color-charcoal: #242729;
+    --color-powder: #A8C9C8;
+    --color-orange: #F45B0B;
+    --color-light-bg: #F7F5F0;
+  }
+
+  html {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(168, 201, 200, 0.3);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(168, 201, 200, 0.5);
+  }
+}
+
+@layer utilities {
+  .editorial-title {
+    font-family: 'Newsreader', 'Fraunces', Georgia, serif;
+    letter-spacing: -0.02em;
+  }
+
+  .mono-code {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Transitions for theme switching */
+body, nav, header, footer, div, section, card, button, input {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Owl blink animation */
+@keyframes owlBlink {
+  0%, 92%, 100% {
+    transform: scaleY(1);
+  }
+  94%, 98% {
+    transform: scaleY(0.1);
+  }
+}
+
+.owl-eyelid-blink {
+  transform-origin: center;
+  animation: owlBlink 4.5s infinite ease-in-out;
+}
+
+/* Gentle subtle breath for owl */
+@keyframes owlBreathe {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.owl-breathe {
+  animation: owlBreathe 4s infinite ease-in-out;
+}
